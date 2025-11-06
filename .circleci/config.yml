@@ -20,9 +20,8 @@ references:
   # The nodejs version set as `nodejs_current` is the one used to
   # release the package on npm.
   nodejs_versions:
-    - &nodejs_current "14.19"
-    - &nodejs_next "16.14"
-    - &nodejs_experimental "17.7"
+    - &nodejs_current "24.11"
+    - &nodejs_next "25.1"
 
   nodejs_enum: &nodejs_enum
     type: enum
@@ -30,7 +29,6 @@ references:
     enum:
       - *nodejs_current
       - *nodejs_next
-      - *nodejs_experimental
   repo_path: &repo_path ~/web-ext
   defaults: &defaults
     working_directory: *repo_path
@@ -47,7 +45,7 @@ commands:
     steps:
       - persist_to_workspace:
           root: *repo_path
-          paths: .
+          paths: [.]
 
   restore_build_cache:
     description: restore npm package cache
@@ -133,18 +131,11 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - build:
-          name: build-nodejs-experimental
-          nodejs: *nodejs_experimental
-          filters:
-            tags:
-              only: /.*/
       - release-tag:
           nodejs: *nodejs_current
           requires:
             - build-nodejs-current
             - build-nodejs-next
-            - build-nodejs-experimental
           filters:
             tags:
               only: /.*/
